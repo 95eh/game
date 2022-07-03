@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "/pb";
+
+message PushToUser {
+  string id = 1;
+  bytes Bytes = 2;
+}
+
+message PushToUsers {
+  repeated string ids = 1;
+  bytes Bytes = 2;
+}
+
+message PushToAllUsers {
+  bytes Bytes = 1;
+}
+
+message ReqGateAuth {
+  string Token = 1;
+}
+
+// 1: 过期
+message ResGateAuth {
+  fixed32 ErrCode = 1;
+}
+
+message ResGateAuthRepeat {
+
+}
+
+message ReqGateSetCharacterId {
+  string Cid = 2;
+}
+
+message ResGateSetCharacterId {
+}
+
+message ReqGateDisconnect {
+}
+
+message ResGateDisconnect {
+}
+
+message NtcGateUserOffline {
+
+}

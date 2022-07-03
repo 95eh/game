@@ -1,0 +1,46 @@
+app:
+  mode: release
+  name: 95eh
+  ver: 0.0.1
+  region: 1
+  nodeId: 0
+mongoDB:
+  userName: root
+  password: 123456
+  addr: 127.0.0.1:27017
+  dbName: hm_game
+globalRedis:
+  addr: 127.0.0.1:6379
+  password: ""
+  db: 0
+regionRedis:
+  addr: 127.0.0.1:6379
+  password: ""
+  db: 1
+net:
+  ip: 127.0.0.1
+  port: 7310
+socket:
+  ip: 127.0.0.1
+  port: 7311
+http:
+  ip: 127.0.0.1
+  port: 7312
+gate:
+  enable: true
+  cap: 4096
+character:
+  enable: true
+# 场景服开关
+scnNovice:
+  enable: true
+scnWorld:
+  enable: true
+  tile:
+    width: 2048
+    length: 2048
+    tileSize: 32
+    eventDis: 32
+    visionDis: 32
+other:
+  sensitiveFilterUrl: "https://raw.githubusercontent.com/importcjj/sensitive/master/dict/dict.txt"

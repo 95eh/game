@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "/pb";
+
+message ReqAccountSignUp {
+  string Mobile = 1;
+  string Password = 2;
+  string RealName = 3;
+  string IdNum = 4;
+}
+
+message ResAccountSignUp {
+  fixed32 ErrCode = 1;
+}
+
+message ReqAccountSignIn {
+  string Mobile = 1;
+  string Password = 2;
+}
+
+// 1: 账号或密码空
+// 2: 不存在的账号
+// 3: 密码错误
+message ResAccountSignIn {
+  fixed32 ErrCode = 1;
+  string Token = 2;
+}
+
+message ReqAccountSignOut {
+}
+
+message ResAccountSignOut {
+  fixed32 ErrCode = 1;
+}

@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "/pb";
+
+message ReqSceneEnter {
+  sfixed64 SceneId = 1;
+  sfixed32 Type = 2;
+  bytes Bytes = 3;
+}
+
+message ResSceneEnter {
+
+}
+
+message NtcSceneEnter {
+  int32 SceneType = 1; //场景类型
+  int64 SceneId = 2; //场景id
+  float PosX = 3;
+  float PosY = 4;
+  float PosZ = 5;
+}
+
+message ReqSceneExit {
+}
+
+message ResSceneExit {
+
+}
+
+message ReqSceneChangePos {
+  float PosX = 1;
+  float PosY = 2;
+  float PosZ = 3;
+}
+
+message ResSceneChangePos {
+
+}
+
+message NtcSceneChangePos {
+  sfixed64 Id = 1;
+  float PosX = 2;
+  float PosY = 3;
+  float PosZ = 4;
+}
+
+message NtcSceneVisible {
+  sfixed64 Id = 1;
+  sfixed32 Type = 2;
+  float PosX = 3;
+  float PosY = 4;
+  float PosZ = 5;
+  float ForX = 6;
+  float ForY = 7;
+  float ForZ = 8;
+  map<sfixed32, sfixed32> IntInfo = 9;
+  map<sfixed32, sfixed64> LongInfo = 10;
+  map<sfixed32, string> IStrInfo = 11;
+}
+
+message NtcSceneInvisible {
+  sfixed64 Id = 1;
+}
+
+message ReqSceneMoveStart {
+  float ForX = 1;
+  float ForY = 2;
+  float ForZ = 3;
+}
+
+message ResSceneMoveStart {
+
+}
+
+message NtcSceneMoveStart {
+  sfixed64 Id = 1;
+  float PosX = 2;
+  float PosY = 3;
+  float PosZ = 4;
+  float ForX = 5;
+  float ForY = 6;
+  float ForZ = 7;
+}
+
+message ReqSceneMoveStop {
+
+}
+
+message ResSceneMoveStop {
+
+}
+
+message NtcSceneMoveStop {
+  sfixed64 Id = 1;
+  float PosX = 2;
+  float PosY = 3;
+  float PosZ = 4;
+}
+
+message ReqSceneCreate {
+  sfixed32 SceneType = 1;
+  sfixed64 SceneId = 2;
+  sfixed64 ActorCap = 3;
+  bytes Data = 4;
+}
+
+message ResSceneCreate {
+
+}
+
+message ReqSceneDispose {
+  sfixed64 SceneId = 1;
+}
+
+message ResSceneDispose {
+
+}

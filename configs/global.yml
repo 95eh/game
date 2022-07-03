@@ -1,0 +1,29 @@
+app:
+  mode: release
+  name: 95eh
+  ver: 0.0.1
+  region: 0
+  nodeId: 0
+mongoDB:
+  userName: root
+  password: 123456
+  addr: 127.0.0.1:27017
+  dbName: hm_login
+redis:
+  addr: 127.0.0.1:6379
+  password: ""
+  db: 0
+net:
+  ip: 127.0.0.1
+  port: 7300
+http:
+  ip: 127.0.0.1
+  port: 7301
+region:
+  enable: true
+  checkSecs: 5
+account:
+  enable: true
+  jwtKey: r.HRepe+}YBQo~#lN={;,@G. # 必须为16|24|32位
+  salt: jP?SF;Z^H5)
+  opsPw: v%8*j5TEpN#X #运维通用密码

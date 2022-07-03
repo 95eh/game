@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "/pb";
+
+// service: character
+
+message ReqCharacter {
+
+}
+
+message Character {
+  string Id = 1;
+  string NickName = 2;
+  sfixed32 Gender = 3;
+  sfixed32 Figure = 4;
+  bool IsNovice = 5;
+  sfixed32 SceneType = 6;
+  sfixed64 SceneId = 7;
+}
+
+message ResCharacter {
+  fixed32 ErrCode = 1;
+  repeated Character Characters = 2;
+}
+
+message ReqCharacterCreate {
+  string NickName = 1; // 昵称
+  sfixed32 Gender = 2; // 性别，0男，1女
+  sfixed32 Figure = 3; // 形象
+}
+
+// 1: 敏感词
+// 2: 长度错误
+// 3: 性别错误
+// 4:
+message ResCharacterCreate {
+  fixed32 ErrCode = 1;
+}
+
+// 1: 没有设置cid
+// 2: 查询失败
+// 3: 不存在的cid
+message ReqCharacterSelect {
+  string Cid = 1;
+}
+
+message ResCharacterSelect {
+  fixed32 ErrCode = 1;
+}
+
+message ReqCharacterEnterScene {
+}
+
+message ResCharacterEnterScene {
+  fixed32 ErrCode = 1;
+}
+
+message ReqCharacterChangeScene {
+  sfixed32 SceneType = 1;
+  sfixed64 SceneId = 2;
+}
+
+message ResCharacterChangeScene {
+  fixed32 ErrCode = 1;
+}
+
+message ReqCharacterExitScene {
+}
+
+message ResCharacterExitScene {
+  fixed32 ErrCode = 1;
+}

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "/pb";
+
+// service: region
+
+message Region {
+  sfixed64 Id = 1;
+  string Name = 2;
+  fixed32 Status = 3;
+  string HttpIp = 4;
+  string HttpPort = 5;
+  string SocketIp = 6;
+  string SocketPort = 7;
+  fixed32  Count  = 8;
+  fixed32 Cap = 9;
+}
+
+// code = 0
+message ReqRegionList {
+}
+
+// code = 0
+message ResRegionList {
+  repeated Region List = 1;
+}
