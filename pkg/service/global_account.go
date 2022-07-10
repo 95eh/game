@@ -18,18 +18,20 @@ import (
 
 func InitGlobalAccount(conf cmn.AccountConf) {
 	proto.InitAccountCodec()
-	svc := eg.Svc().BindService(cmn.SvcAccount)
-	{
-		svc.Bind(proto.CdAccountSignUp, accountSignUp)
-		svc.Bind(proto.CdAccountSignIn, accountSignIn)
-		svc.Bind(proto.CdAccountSignOut, accountSignOut)
-	}
+
 	ug := eg.Gate()
 	{
 		ug.SetRole(cmn.RoleGuest, cmn.SvcAccount,
 			proto.CdAccountSignUp,
 			proto.CdAccountSignIn,
 		)
+	}
+
+	svc := eg.Svc().RegisterService(cmn.SvcAccount)
+	{
+		svc.BindReq(proto.CdAccountSignUp, accountSignUp)
+		svc.BindReq(proto.CdAccountSignIn, accountSignIn)
+		svc.BindReq(proto.CdAccountSignOut, accountSignOut)
 	}
 
 	createIndexes()
@@ -119,10 +121,12 @@ func accountSignUp(ctx eg.ICtx) {
 	pwMD5 := hex.EncodeToString(bytes[:])
 	accountColl().InsertOne(context.TODO(), &model.Account{
 		Id:       primitive.NewObjectID(),
+		Uid:      eg.SId().GetGlobalId(),
 		Mobile:   req.Mobile,
 		Password: pwMD5,
 		RealName: req.RealName,
 		IdNum:    req.IdNum,
+		Mask:     eg.GenMask(cmn.RolePlayer),
 	})
 	ctx.Ok(&pb.ResAccountSignUp{})
 }
@@ -157,7 +161,9 @@ func accountSignIn(ctx eg.ICtx) {
 		return
 	}
 
-	token, err := cmn.GenerateJwt(account.Id.Hex())
+	uid := account.Uid
+	expire := time.Now().Unix() + 30
+	agentId, token, err := cmn.GenerateJwt(uid, account.Mask, expire)
 	if err != nil {
 		ctx.Err(eg.WrapErr(eg.EcServiceErr, err))
 		return
@@ -165,6 +171,7 @@ func accountSignIn(ctx eg.ICtx) {
 	ctx.Ok(&pb.ResAccountSignIn{
 		Token: token,
 	})
+	eg.Gate().SetAgentData(agentId, account.Mask, uid, expire, nil)
 }
 
 func accountSignOut(ctx eg.ICtx) {

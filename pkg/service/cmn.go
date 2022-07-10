@@ -7,7 +7,7 @@ import (
 	"github.com/95eh/eg"
 )
 
-func PushToUser(tid int64, id string, service, code int, pkt interface{}) {
+func PushToUser(tid, id int64, service, code int, pkt interface{}) {
 	bytes, err := eg.Codec().Marshal(pkt)
 	if err != nil {
 		eg.Log().TraceErr(tid, err)
@@ -17,13 +17,13 @@ func PushToUser(tid int64, id string, service, code int, pkt interface{}) {
 	buffer.WUint16(uint16(service))
 	buffer.WUint16(uint16(code))
 	buffer.Write(bytes)
-	eg.Svc().Request(tid, id, cmn.SvcGate, proto.CdGatePushToUser, &pb.PushToUser{
+	eg.Req().Request(tid, id, cmn.SvcGate, proto.CdGatePushToUser, &pb.PushToUser{
 		Id:    id,
 		Bytes: buffer.All(),
 	}, nil, nil)
 }
 
-func PushToUsers(tid int64, ids []string, serve, code int, pkt interface{}) {
+func PushToUsers(tid int64, ids []int64, serve, code int, pkt interface{}) {
 	bytes, err := eg.Codec().Marshal(pkt)
 	if err != nil {
 		eg.Log().TraceErr(tid, err)
@@ -36,7 +36,7 @@ func PushToUsers(tid int64, ids []string, serve, code int, pkt interface{}) {
 	allBytes := buffer.All()
 
 	for _, id := range ids {
-		eg.Svc().Request(tid, id, cmn.SvcGate, proto.CdGatePushToUsers, &pb.PushToUsers{
+		eg.Req().Request(tid, id, cmn.SvcGate, proto.CdGatePushToUsers, &pb.PushToUsers{
 			Ids:   ids,
 			Bytes: eg.CopyBytes(allBytes),
 		}, nil, nil)
@@ -53,7 +53,7 @@ func PushToAllUsers(tid int64, serve, code int, pkt interface{}) {
 	buffer.WUint16(uint16(serve))
 	buffer.WUint16(uint16(code))
 	buffer.Write(bytes)
-	eg.Svc().Request(tid, "", cmn.SvcGate, proto.CdGatePushToAllUsers, &pb.PushToUsers{
+	eg.Req().Request(tid, 0, cmn.SvcGate, proto.CdGatePushToAllUsers, &pb.PushToUsers{
 		Bytes: buffer.All(),
 	}, nil, nil)
 }

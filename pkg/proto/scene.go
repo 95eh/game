@@ -26,7 +26,7 @@ func init() {
 	eg.SetCodeNames(cmn.SvcScene, map[eg.TCode]string{
 		CdSceneEnter:        "enter",
 		CdSceneEnterNtc:     "enter_ntc",
-		CdSceneExit:         "exit_curr",
+		CdSceneExit:         "exit",
 		CdSceneChangePos:    "change_pos",
 		CdSceneChangePosNtc: "change_pos_ntc",
 		CdSceneVisibleNtc:   "visible_ntc",

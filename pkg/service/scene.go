@@ -11,15 +11,15 @@ import (
 
 func InitScene(sceneService eg.TService) {
 	proto.InitSceneCodec()
-	svc := eg.Svc().BindService(sceneService)
+	svc := eg.Svc().RegisterService(sceneService)
 	{
-		svc.Bind(proto.CdSceneEnter, sceneEnter)
-		svc.Bind(proto.CdSceneExit, sceneExit)
-		svc.Bind(proto.CdSceneChangePos, sceneChangePos)
-		svc.Bind(proto.CdSceneMoveStart, sceneMoveStart)
-		svc.Bind(proto.CdSceneMoveStop, sceneMoveStop)
-		svc.Bind(proto.CdSceneCreate, sceneCreate)
-		svc.Bind(proto.CdSceneDispose, sceneDispose)
+		svc.BindReq(proto.CdSceneEnter, sceneEnter)
+		svc.BindReq(proto.CdSceneExit, sceneExit)
+		svc.BindReq(proto.CdSceneChangePos, sceneChangePos)
+		svc.BindReq(proto.CdSceneMoveStart, sceneMoveStart)
+		svc.BindReq(proto.CdSceneMoveStop, sceneMoveStop)
+		svc.BindReq(proto.CdSceneCreate, sceneCreate)
+		svc.BindReq(proto.CdSceneDispose, sceneDispose)
 	}
 	if eg.Scene() == nil {
 		eg.AddModule(
@@ -127,6 +127,7 @@ func sceneExit(ctx eg.ICtx) {
 			return nil
 		}).
 		ActorProcessEvents().
+		RecycleActor().
 		Do(nil, func(object *eg.Object, err eg.IErr) {
 			if err != nil {
 				ctx.Err(err)

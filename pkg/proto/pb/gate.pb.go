@@ -24,7 +24,7 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type PushToUser struct {
-	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id                   int64    `protobuf:"fixed64,1,opt,name=id,proto3" json:"id,omitempty"`
 	Bytes                []byte   `protobuf:"bytes,2,opt,name=Bytes,proto3" json:"Bytes,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -64,11 +64,11 @@ func (m *PushToUser) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PushToUser proto.InternalMessageInfo
 
-func (m *PushToUser) GetId() string {
+func (m *PushToUser) GetId() int64 {
 	if m != nil {
 		return m.Id
 	}
-	return ""
+	return 0
 }
 
 func (m *PushToUser) GetBytes() []byte {
@@ -79,7 +79,7 @@ func (m *PushToUser) GetBytes() []byte {
 }
 
 type PushToUsers struct {
-	Ids                  []string `protobuf:"bytes,1,rep,name=ids,proto3" json:"ids,omitempty"`
+	Ids                  []int64  `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
 	Bytes                []byte   `protobuf:"bytes,2,opt,name=Bytes,proto3" json:"Bytes,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -119,7 +119,7 @@ func (m *PushToUsers) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PushToUsers proto.InternalMessageInfo
 
-func (m *PushToUsers) GetIds() []string {
+func (m *PushToUsers) GetIds() []int64 {
 	if m != nil {
 		return m.Ids
 	}
@@ -228,6 +228,7 @@ func (m *ReqGateAuth) GetToken() string {
 }
 
 // 1: 过期
+// 2: 重复登陆
 type ResGateAuth struct {
 	ErrCode              uint32   `protobuf:"fixed32,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -275,47 +276,8 @@ func (m *ResGateAuth) GetErrCode() uint32 {
 	return 0
 }
 
-type ResGateAuthRepeat struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ResGateAuthRepeat) Reset()         { *m = ResGateAuthRepeat{} }
-func (m *ResGateAuthRepeat) String() string { return proto.CompactTextString(m) }
-func (*ResGateAuthRepeat) ProtoMessage()    {}
-func (*ResGateAuthRepeat) Descriptor() ([]byte, []int) {
-	return fileDescriptor_743bb58a714d8b7d, []int{5}
-}
-func (m *ResGateAuthRepeat) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ResGateAuthRepeat) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ResGateAuthRepeat.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ResGateAuthRepeat) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ResGateAuthRepeat.Merge(m, src)
-}
-func (m *ResGateAuthRepeat) XXX_Size() int {
-	return m.Size()
-}
-func (m *ResGateAuthRepeat) XXX_DiscardUnknown() {
-	xxx_messageInfo_ResGateAuthRepeat.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ResGateAuthRepeat proto.InternalMessageInfo
-
 type ReqGateSetCharacterId struct {
-	Cid                  string   `protobuf:"bytes,2,opt,name=Cid,proto3" json:"Cid,omitempty"`
+	Cid                  int64    `protobuf:"fixed64,2,opt,name=Cid,proto3" json:"Cid,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -325,7 +287,7 @@ func (m *ReqGateSetCharacterId) Reset()         { *m = ReqGateSetCharacterId{} }
 func (m *ReqGateSetCharacterId) String() string { return proto.CompactTextString(m) }
 func (*ReqGateSetCharacterId) ProtoMessage()    {}
 func (*ReqGateSetCharacterId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_743bb58a714d8b7d, []int{6}
+	return fileDescriptor_743bb58a714d8b7d, []int{5}
 }
 func (m *ReqGateSetCharacterId) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -354,11 +316,11 @@ func (m *ReqGateSetCharacterId) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ReqGateSetCharacterId proto.InternalMessageInfo
 
-func (m *ReqGateSetCharacterId) GetCid() string {
+func (m *ReqGateSetCharacterId) GetCid() int64 {
 	if m != nil {
 		return m.Cid
 	}
-	return ""
+	return 0
 }
 
 type ResGateSetCharacterId struct {
@@ -371,7 +333,7 @@ func (m *ResGateSetCharacterId) Reset()         { *m = ResGateSetCharacterId{} }
 func (m *ResGateSetCharacterId) String() string { return proto.CompactTextString(m) }
 func (*ResGateSetCharacterId) ProtoMessage()    {}
 func (*ResGateSetCharacterId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_743bb58a714d8b7d, []int{7}
+	return fileDescriptor_743bb58a714d8b7d, []int{6}
 }
 func (m *ResGateSetCharacterId) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -400,84 +362,6 @@ func (m *ResGateSetCharacterId) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ResGateSetCharacterId proto.InternalMessageInfo
 
-type ReqGateDisconnect struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ReqGateDisconnect) Reset()         { *m = ReqGateDisconnect{} }
-func (m *ReqGateDisconnect) String() string { return proto.CompactTextString(m) }
-func (*ReqGateDisconnect) ProtoMessage()    {}
-func (*ReqGateDisconnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_743bb58a714d8b7d, []int{8}
-}
-func (m *ReqGateDisconnect) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ReqGateDisconnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ReqGateDisconnect.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ReqGateDisconnect) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReqGateDisconnect.Merge(m, src)
-}
-func (m *ReqGateDisconnect) XXX_Size() int {
-	return m.Size()
-}
-func (m *ReqGateDisconnect) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReqGateDisconnect.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReqGateDisconnect proto.InternalMessageInfo
-
-type ResGateDisconnect struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ResGateDisconnect) Reset()         { *m = ResGateDisconnect{} }
-func (m *ResGateDisconnect) String() string { return proto.CompactTextString(m) }
-func (*ResGateDisconnect) ProtoMessage()    {}
-func (*ResGateDisconnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_743bb58a714d8b7d, []int{9}
-}
-func (m *ResGateDisconnect) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ResGateDisconnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ResGateDisconnect.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ResGateDisconnect) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ResGateDisconnect.Merge(m, src)
-}
-func (m *ResGateDisconnect) XXX_Size() int {
-	return m.Size()
-}
-func (m *ResGateDisconnect) XXX_DiscardUnknown() {
-	xxx_messageInfo_ResGateDisconnect.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ResGateDisconnect proto.InternalMessageInfo
-
 type NtcGateUserOffline struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -488,7 +372,7 @@ func (m *NtcGateUserOffline) Reset()         { *m = NtcGateUserOffline{} }
 func (m *NtcGateUserOffline) String() string { return proto.CompactTextString(m) }
 func (*NtcGateUserOffline) ProtoMessage()    {}
 func (*NtcGateUserOffline) Descriptor() ([]byte, []int) {
-	return fileDescriptor_743bb58a714d8b7d, []int{10}
+	return fileDescriptor_743bb58a714d8b7d, []int{7}
 }
 func (m *NtcGateUserOffline) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -523,37 +407,32 @@ func init() {
 	proto.RegisterType((*PushToAllUsers)(nil), "pb.PushToAllUsers")
 	proto.RegisterType((*ReqGateAuth)(nil), "pb.ReqGateAuth")
 	proto.RegisterType((*ResGateAuth)(nil), "pb.ResGateAuth")
-	proto.RegisterType((*ResGateAuthRepeat)(nil), "pb.ResGateAuthRepeat")
 	proto.RegisterType((*ReqGateSetCharacterId)(nil), "pb.ReqGateSetCharacterId")
 	proto.RegisterType((*ResGateSetCharacterId)(nil), "pb.ResGateSetCharacterId")
-	proto.RegisterType((*ReqGateDisconnect)(nil), "pb.ReqGateDisconnect")
-	proto.RegisterType((*ResGateDisconnect)(nil), "pb.ResGateDisconnect")
 	proto.RegisterType((*NtcGateUserOffline)(nil), "pb.NtcGateUserOffline")
 }
 
 func init() { proto.RegisterFile("gate.proto", fileDescriptor_743bb58a714d8b7d) }
 
 var fileDescriptor_743bb58a714d8b7d = []byte{
-	// 290 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x91, 0xc1, 0x4a, 0xfb, 0x40,
-	0x10, 0xc6, 0xff, 0x9b, 0xf0, 0xb7, 0x64, 0x2a, 0x45, 0x63, 0x8b, 0x39, 0x85, 0xb0, 0x82, 0xc6,
-	0x8b, 0x82, 0xe2, 0x03, 0xb4, 0x51, 0xc4, 0x8b, 0xca, 0x5a, 0x2f, 0xde, 0x92, 0xec, 0xd4, 0x2c,
-	0x86, 0x6c, 0xdc, 0xdd, 0x1e, 0x7c, 0x13, 0x1f, 0xc9, 0xa3, 0x8f, 0x20, 0xf1, 0x45, 0x64, 0x93,
-	0x5a, 0x03, 0xe2, 0x6d, 0xbe, 0xe1, 0xf7, 0xcd, 0xcc, 0xc7, 0x00, 0x3c, 0xa6, 0x06, 0x8f, 0x6a,
-	0x25, 0x8d, 0xf4, 0x9d, 0x3a, 0xa3, 0x27, 0x00, 0xb7, 0x4b, 0x5d, 0xcc, 0xe5, 0xbd, 0x46, 0xe5,
-	0x8f, 0xc0, 0x11, 0x3c, 0x20, 0x11, 0x89, 0x3d, 0xe6, 0x08, 0xee, 0x8f, 0xe1, 0xff, 0xec, 0xc5,
-	0xa0, 0x0e, 0x9c, 0x88, 0xc4, 0x9b, 0xac, 0x13, 0xf4, 0x0c, 0x86, 0x3f, 0x1e, 0xed, 0x6f, 0x81,
-	0x2b, 0xb8, 0x0e, 0x48, 0xe4, 0xc6, 0x1e, 0xb3, 0xe5, 0x1f, 0xb6, 0x7d, 0x18, 0x75, 0xb6, 0x69,
-	0x59, 0x76, 0xce, 0x35, 0x47, 0xfa, 0xdc, 0x1e, 0x0c, 0x19, 0x3e, 0x5f, 0xa6, 0x06, 0xa7, 0x4b,
-	0x53, 0x58, 0x68, 0x2e, 0x9f, 0xb0, 0x5a, 0x9d, 0xd5, 0x09, 0x7a, 0x60, 0x21, 0xbd, 0x86, 0x02,
-	0x18, 0x5c, 0x28, 0x95, 0x48, 0x8e, 0x2d, 0x36, 0x60, 0xdf, 0x92, 0xee, 0xc0, 0x76, 0x0f, 0x64,
-	0x58, 0x63, 0x6a, 0xe8, 0x21, 0x4c, 0x56, 0x2b, 0xee, 0xd0, 0x24, 0x45, 0xaa, 0xd2, 0xdc, 0xa0,
-	0xba, 0xe2, 0x36, 0x4b, 0x22, 0x78, 0x7b, 0xb7, 0xc7, 0x6c, 0x49, 0x77, 0x2d, 0xaa, 0x7f, 0xa3,
-	0xdd, 0xe0, 0x76, 0xc6, 0xb9, 0xd0, 0xb9, 0xac, 0x2a, 0xcc, 0x4d, 0x6f, 0x5b, 0xaf, 0x39, 0x06,
-	0xff, 0xda, 0xe4, 0xb6, 0x69, 0x63, 0xdf, 0x2c, 0x16, 0xa5, 0xa8, 0x70, 0x36, 0x79, 0x6b, 0x42,
-	0xf2, 0xde, 0x84, 0xe4, 0xa3, 0x09, 0xc9, 0xeb, 0x67, 0xf8, 0xef, 0xc1, 0x3d, 0xae, 0xb3, 0x6c,
-	0xa3, 0xfd, 0xcd, 0xe9, 0x57, 0x00, 0x00, 0x00, 0xff, 0xff, 0xb6, 0xab, 0x68, 0xe7, 0xa9, 0x01,
-	0x00, 0x00,
+	// 263 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4a, 0x4f, 0x2c, 0x49,
+	0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x2a, 0x48, 0x52, 0x32, 0xe2, 0xe2, 0x0a, 0x28,
+	0x2d, 0xce, 0x08, 0xc9, 0x0f, 0x2d, 0x4e, 0x2d, 0x12, 0xe2, 0xe3, 0x62, 0xca, 0x4c, 0x91, 0x60,
+	0x54, 0x60, 0xd4, 0x10, 0x08, 0x62, 0xca, 0x4c, 0x11, 0x12, 0xe1, 0x62, 0x75, 0xaa, 0x2c, 0x49,
+	0x2d, 0x96, 0x60, 0x52, 0x60, 0xd4, 0xe0, 0x09, 0x82, 0x70, 0x94, 0x4c, 0xb9, 0xb8, 0x11, 0x7a,
+	0x8a, 0x85, 0x04, 0xb8, 0x98, 0x33, 0x53, 0x8a, 0x25, 0x18, 0x15, 0x98, 0x35, 0x98, 0x83, 0x40,
+	0x4c, 0x1c, 0xda, 0xd4, 0xb8, 0xf8, 0x20, 0xda, 0x1c, 0x73, 0x72, 0x20, 0x3a, 0xe1, 0xea, 0x18,
+	0x91, 0xd5, 0x29, 0x73, 0x71, 0x07, 0xa5, 0x16, 0xba, 0x27, 0x96, 0xa4, 0x3a, 0x96, 0x96, 0x64,
+	0x80, 0x14, 0x85, 0xe4, 0x67, 0xa7, 0xe6, 0x81, 0x15, 0x71, 0x06, 0x41, 0x38, 0x4a, 0xea, 0x20,
+	0x45, 0xc5, 0x70, 0x45, 0x12, 0x5c, 0xec, 0xae, 0x45, 0x45, 0xce, 0xf9, 0x29, 0xa9, 0x60, 0x65,
+	0xec, 0x41, 0x30, 0xae, 0x92, 0x26, 0x97, 0x28, 0xd4, 0xb4, 0xe0, 0xd4, 0x12, 0xe7, 0x8c, 0xc4,
+	0xa2, 0xc4, 0xe4, 0x92, 0xd4, 0x22, 0xcf, 0x14, 0x90, 0xb3, 0x9d, 0x33, 0x53, 0xc0, 0x4e, 0x14,
+	0x08, 0x02, 0x31, 0x95, 0xc4, 0x41, 0x4a, 0x8b, 0x31, 0x95, 0x2a, 0x89, 0x70, 0x09, 0xf9, 0x95,
+	0x24, 0x83, 0x24, 0x40, 0xee, 0xf6, 0x4f, 0x4b, 0xcb, 0xc9, 0xcc, 0x4b, 0x75, 0x12, 0x3d, 0xf1,
+	0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x67, 0x3c, 0x96, 0x63, 0x88,
+	0x62, 0xd6, 0x2f, 0x48, 0x4a, 0x62, 0x03, 0x07, 0xae, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0xf7,
+	0xd8, 0x1b, 0x7c, 0x6a, 0x01, 0x00, 0x00,
 }
 
 func (m *PushToUser) Marshal() (dAtA []byte, err error) {
@@ -587,12 +466,11 @@ func (m *PushToUser) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Id) > 0 {
-		i -= len(m.Id)
-		copy(dAtA[i:], m.Id)
-		i = encodeVarintGate(dAtA, i, uint64(len(m.Id)))
+	if m.Id != 0 {
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(m.Id))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x9
 	}
 	return len(dAtA) - i, nil
 }
@@ -629,13 +507,23 @@ func (m *PushToUsers) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x12
 	}
 	if len(m.Ids) > 0 {
-		for iNdEx := len(m.Ids) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.Ids[iNdEx])
-			copy(dAtA[i:], m.Ids[iNdEx])
-			i = encodeVarintGate(dAtA, i, uint64(len(m.Ids[iNdEx])))
-			i--
-			dAtA[i] = 0xa
+		dAtA2 := make([]byte, len(m.Ids)*10)
+		var j1 int
+		for _, num1 := range m.Ids {
+			num := uint64(num1)
+			for num >= 1<<7 {
+				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j1++
+			}
+			dAtA2[j1] = uint8(num)
+			j1++
 		}
+		i -= j1
+		copy(dAtA[i:], dAtA2[:j1])
+		i = encodeVarintGate(dAtA, i, uint64(j1))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -741,33 +629,6 @@ func (m *ResGateAuth) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *ResGateAuthRepeat) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ResGateAuthRepeat) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ResGateAuthRepeat) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	return len(dAtA) - i, nil
-}
-
 func (m *ReqGateSetCharacterId) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -792,12 +653,11 @@ func (m *ReqGateSetCharacterId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
-	if len(m.Cid) > 0 {
-		i -= len(m.Cid)
-		copy(dAtA[i:], m.Cid)
-		i = encodeVarintGate(dAtA, i, uint64(len(m.Cid)))
+	if m.Cid != 0 {
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(m.Cid))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x11
 	}
 	return len(dAtA) - i, nil
 }
@@ -818,60 +678,6 @@ func (m *ResGateSetCharacterId) MarshalTo(dAtA []byte) (int, error) {
 }
 
 func (m *ResGateSetCharacterId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ReqGateDisconnect) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ReqGateDisconnect) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ReqGateDisconnect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ResGateDisconnect) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ResGateDisconnect) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ResGateDisconnect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -927,9 +733,8 @@ func (m *PushToUser) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Id)
-	if l > 0 {
-		n += 1 + l + sovGate(uint64(l))
+	if m.Id != 0 {
+		n += 9
 	}
 	l = len(m.Bytes)
 	if l > 0 {
@@ -948,10 +753,11 @@ func (m *PushToUsers) Size() (n int) {
 	var l int
 	_ = l
 	if len(m.Ids) > 0 {
-		for _, s := range m.Ids {
-			l = len(s)
-			n += 1 + l + sovGate(uint64(l))
+		l = 0
+		for _, e := range m.Ids {
+			l += sovGate(uint64(e))
 		}
+		n += 1 + sovGate(uint64(l)) + l
 	}
 	l = len(m.Bytes)
 	if l > 0 {
@@ -1010,27 +816,14 @@ func (m *ResGateAuth) Size() (n int) {
 	return n
 }
 
-func (m *ResGateAuthRepeat) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
 func (m *ReqGateSetCharacterId) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Cid)
-	if l > 0 {
-		n += 1 + l + sovGate(uint64(l))
+	if m.Cid != 0 {
+		n += 9
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -1039,30 +832,6 @@ func (m *ReqGateSetCharacterId) Size() (n int) {
 }
 
 func (m *ResGateSetCharacterId) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *ReqGateDisconnect) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *ResGateDisconnect) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1122,37 +891,15 @@ func (m *PushToUser) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGate
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGate
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGate
-			}
-			if postIndex > l {
+			m.Id = 0
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Id = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
+			m.Id = int64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Bytes", wireType)
@@ -1239,37 +986,81 @@ func (m *PushToUsers) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ids", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGate
+			if wireType == 0 {
+				var v int64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowGate
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
 				}
-				if iNdEx >= l {
+				m.Ids = append(m.Ids, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowGate
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthGate
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthGate
+				}
+				if postIndex > l {
 					return io.ErrUnexpectedEOF
 				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
 				}
+				elementCount = count
+				if elementCount != 0 && len(m.Ids) == 0 {
+					m.Ids = make([]int64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v int64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowGate
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= int64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.Ids = append(m.Ids, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field Ids", wireType)
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGate
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGate
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Ids = append(m.Ids, string(dAtA[iNdEx:postIndex]))
-			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Bytes", wireType)
@@ -1555,57 +1346,6 @@ func (m *ResGateAuth) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ResGateAuthRepeat) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGate
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ResGateAuthRepeat: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ResGateAuthRepeat: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGate(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthGate
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
 func (m *ReqGateSetCharacterId) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -1636,37 +1376,15 @@ func (m *ReqGateSetCharacterId) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 2:
-			if wireType != 2 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Cid", wireType)
 			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGate
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGate
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGate
-			}
-			if postIndex > l {
+			m.Cid = 0
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Cid = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
+			m.Cid = int64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGate(dAtA[iNdEx:])
@@ -1716,108 +1434,6 @@ func (m *ResGateSetCharacterId) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: ResGateSetCharacterId: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGate(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthGate
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ReqGateDisconnect) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGate
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ReqGateDisconnect: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ReqGateDisconnect: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGate(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthGate
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ResGateDisconnect) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGate
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ResGateDisconnect: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ResGateDisconnect: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

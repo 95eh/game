@@ -11,15 +11,6 @@ import (
 
 func InitGate(conf *cmn.GameConfig) {
 	proto.InitGateCodec()
-	initUser()
-	svc := eg.Svc().BindService(cmn.SvcGate)
-	{
-		svc.Bind(proto.CdGateSetCharacterId, gateSetCharacterId)
-		svc.Bind(proto.CdGateDisconnect, gateDisconnect)
-		svc.Bind(proto.CdGatePushToUser, gatePushToUser)
-		svc.Bind(proto.CdGatePushToUsers, gatePushToUsers)
-		svc.Bind(proto.CdGatePushToAllUsers, gatePushToAllUser)
-	}
 	user := eg.Gate()
 	{
 		user.SetRole(cmn.RoleGuest, cmn.SvcGate,
@@ -30,29 +21,24 @@ func InitGate(conf *cmn.GameConfig) {
 			ug.BindRequest(proto.CdGateAuth, gateAuth)
 		}
 	}
-	gateRegisterAddr(conf)
-}
 
-func gateDisconnect(ctx eg.ICtx) {
-	id := ctx.GetId()
-	eg.Gate().DelUserData(id, func(uid, alias string, ok bool) {
-		ctx.Ok(&pb.ResGateDisconnect{})
-		eg.Conn().Close(id)
-		eg.Log().Info("user disconnect", eg.M{
-			"uid":   uid,
-			"alias": alias,
-		})
-		if alias == "" {
-			return
-		}
-		eg.Ntc().NtcDelUserServiceAlias(0, alias)
-		eg.Ntc().PushNotice(cmn.SvcGate, proto.CdGateUserOfflineNtc,
-			0, alias, &pb.NtcGateUserOffline{})
-	})
+	svc := eg.Svc().RegisterService(cmn.SvcGate)
+	{
+		svc.BindReq(proto.CdGateSetCharacterId, gateSetCharacterId)
+		svc.BindReq(proto.CdGatePushToUser, gatePushToUser)
+		svc.BindReq(proto.CdGatePushToUsers, gatePushToUsers)
+		svc.BindReq(proto.CdGatePushToAllUsers, gatePushToAllUser)
+	}
+
+	gateRegisterAddr(conf)
 }
 
 func gateSetCharacterId(ctx eg.ICtx) {
 	req := ctx.Body().(*pb.ReqGateSetCharacterId)
+	if req.Cid == ctx.GetId() {
+		ctx.Ok(&pb.ResGateSetCharacterId{})
+		return
+	}
 	eg.Gate().SetAlias(ctx.GetId(), req.Cid, func(err eg.IErr) {
 		if err != nil {
 			ctx.Err(err)
@@ -73,6 +59,10 @@ func gateRegisterAddr(conf *cmn.GameConfig) {
 		"http_port", conf.Gate.Http.Port,
 		"socket_ip", conf.Gate.Tcp.Ip,
 		"socket_port", conf.Gate.Tcp.Port,
+		"websocket_ip", conf.Gate.Websocket.Ip,
+		"websocket_port", conf.Gate.Websocket.Port,
+		"udp_ip", conf.Gate.Udp.Ip,
+		"udp_port", conf.Gate.Udp.Port,
 		"count", 0,
 		"cap", conf.Gate.Cap,
 		"status", 1)
@@ -95,7 +85,7 @@ func gateRegisterAddr(conf *cmn.GameConfig) {
 	}
 }
 
-func gateAuth(agentId string, body interface{}, resOk eg.FnInt64Any, resErr eg.FnInt64Err) {
+func gateAuth(agentId int64, body interface{}, resOk eg.FnInt64Any, resErr eg.FnInt64Err) {
 	req := body.(*pb.ReqGateAuth)
 	_, claims, err := cmn.ParseJwt(req.Token)
 	if err != nil {
@@ -107,14 +97,23 @@ func gateAuth(agentId string, body interface{}, resOk eg.FnInt64Any, resErr eg.F
 		ErrCode: 0,
 	})
 
-	eg.Gate().SetUserData(agentId, claims.Uid, func(oldAgentId string, ok bool) {
+	eg.Gate().SetAgentData(agentId, claims.Mask, claims.Uid, claims.Expire, func(oldAgentId int64, ok bool) {
 		if !ok {
+			resOk(0, &pb.ResGateAuth{
+				ErrCode: 1,
+			})
+			eg.Conn().Close(agentId)
+			return
+		}
+		if oldAgentId == 0 {
 			return
 		}
 		eg.Log().Info("重复登陆", eg.M{
 			"old agent id": oldAgentId,
 		})
-		eg.Conn().Send(oldAgentId, cmn.SvcGate, proto.CdGateAuthRepeat, &pb.ResGateAuthRepeat{})
+		eg.Conn().Send(oldAgentId, cmn.SvcGate, proto.CdGateAuth, &pb.ResGateAuth{
+			ErrCode: 2,
+		})
 		eg.Conn().Close(oldAgentId)
 	})
 }
@@ -136,18 +135,4 @@ func gatePushToAllUser(ctx eg.ICtx) {
 
 func getRedisGateKey(region eg.TRegion) string {
 	return fmt.Sprintf("region:%d:gate", region)
-}
-
-func initUser() {
-	eg.Gate().SetRole(cmn.RoleGuest, cmn.SvcGate,
-		proto.CdGateAuth)
-	eg.Gate().SetRole(cmn.RolePlayer, cmn.SvcCharacter,
-		proto.CdCharacterInfo,
-		proto.CdCharacterCreate,
-		proto.CdCharacterSelect,
-		proto.CdCharacterEnterScene,
-		proto.CdCharacterChangeScene,
-		proto.CdCharacterExitScene,
-	)
-	eg.Gate().SetRole(cmn.RolePlayer, cmn.SvcScene)
 }

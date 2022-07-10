@@ -17,9 +17,10 @@ var (
 
 func InitGlobalRegion(conf cmn.RegionConf) {
 	proto.InitRegionCodec()
-	svc := eg.Svc().BindService(cmn.SvcRegion)
+
+	svc := eg.Svc().RegisterService(cmn.SvcRegion)
 	{
-		svc.Bind(proto.CdRegionList, regionList)
+		svc.BindReq(proto.CdRegionList, regionList)
 	}
 }
 
@@ -75,15 +76,19 @@ func globalUpdateRegions(c int32) {
 			continue
 		}
 		regions = append(regions, &pb.Region{
-			Id:         rid,
-			Name:       name,
-			HttpIp:     gm["http_ip"],
-			HttpPort:   gm["http_port"],
-			SocketIp:   gm["socket_ip"],
-			SocketPort: gm["socket_port"],
-			Count:      uint32(count),
-			Cap:        uint32(cap),
-			Status:     uint32(status),
+			Id:            rid,
+			Name:          name,
+			HttpIp:        gm["http_ip"],
+			HttpPort:      gm["http_port"],
+			SocketIp:      gm["socket_ip"],
+			SocketPort:    gm["socket_port"],
+			WebsocketIp:   gm["websocket_ip"],
+			WebsocketPort: gm["websocket_port"],
+			UdpIp:         gm["udp_ip"],
+			UdpPort:       gm["udp_port"],
+			Count:         uint32(count),
+			Cap:           uint32(cap),
+			Status:        uint32(status),
 		})
 	}
 	_GlobalRegionMtx.Lock()

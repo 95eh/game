@@ -52,55 +52,37 @@ func StartGame() {
 			svc.NetIp(conf.Net.Ip),
 			svc.NetPort(conf.Net.Port),
 		},
-		SvcOpts: []svc.Option{
+		ReqOpts: []svc.ReqOption{
 			svc.ServiceAlias(),
 		},
+	}
+	deadline := int64(30)
+	if eg.Mode() == eg.ModeDebug {
+		deadline = 60 * 100
 	}
 	if conf.Gate.Enable {
 		opt.Gate = true
 		opt.GateOpts = []gate.Option{
-			gate.BlackFilter(userBlackFilter),
+			gate.IpBlocker(userIpBlocker),
 			gate.DefaultMask(eg.GenMask(cmn.RoleGuest)),
-			gate.DefaultRole(cmn.RoleSvc),
+			gate.DefaultRole(cmn.RolePlayer),
+			gate.Deadline(deadline),
 		}
 		opt.ConnOpts = []gate.ConnOption{
 			gate.ConnTcpPort(conf.Gate.Tcp.Port),
 			gate.ConnHttpPort(conf.Gate.Http.Port),
-			gate.ConnResOk(func(a eg.IAgent, svc eg.TService, code eg.TCode, o interface{}) {
-				bytes, err := eg.Codec().Marshal(o)
+			gate.ConnHttpIdParser(func(bytes []byte) (int64, int64, eg.IErr) {
+				if bytes == nil {
+					return 0, 0, nil
+				}
+				_, c, err := cmn.ParseJwt(eg.BytesToStr(bytes))
 				if err != nil {
-					eg.Log().Error(err)
-					return
+					return 0, 0, err
 				}
-				buffer := eg.NewByteBufferWithLen(uint32(4 + len(bytes)))
-				buffer.WUint16(svc)
-				buffer.WUint16(code)
-				buffer.Write(bytes)
-				a.Send(buffer.All())
+				return c.Id, c.Uid, nil
 			}),
-			gate.ConnResErr(func(a eg.IAgent, service eg.TService, code eg.TCode, e eg.TErrCode) {
-				eg.Log().Error(eg.NewErr(e, eg.M{
-					"server": service,
-					"code":   code,
-				}))
-			}),
-			gate.ConnPacker(func(service eg.TService, code eg.TCode, o interface{}) []byte {
-				bytes, err := eg.Codec().Marshal(o)
-				if err != nil {
-					eg.Log().Error(err)
-					return nil
-				}
-				buffer := eg.NewByteBufferWithLen(uint32(4 + len(bytes)))
-				buffer.WUint16(service)
-				buffer.WUint16(code)
-				buffer.Write(bytes)
-				return buffer.All()
-			}),
-			gate.ConnClosed(func(agentId string, err eg.IErr) {
-				if err == nil {
-					return
-				}
-				eg.Gate().DelUserData(agentId, func(id, alias string, ok bool) {
+			gate.ConnClosed(func(agentId int64, err eg.IErr) {
+				eg.Gate().DelAgentData(agentId, func(id, alias int64, ok bool) {
 					if !ok {
 						return
 					}
@@ -109,7 +91,7 @@ func StartGame() {
 						"alias":   alias,
 						"agentId": agentId,
 					})
-					if alias == "" {
+					if alias == 0 {
 						return
 					}
 					eg.Ntc().NtcDelUserServiceAlias(0, alias)
@@ -126,14 +108,23 @@ func StartGame() {
 	if conf.Gate.Enable {
 		service.InitGate(conf)
 	}
-	if conf.ScnWorld.Enable {
-		service.InitSceneWorld(conf.ScnWorld)
-	}
-	if conf.Character.Enable {
-		service.InitCharacter(conf.Character)
-	}
+	service.InitSceneWorld(conf.ScnWorld)
+	service.InitCharacter(conf.Character)
 
 	eg.Start()
+
+	service.CreateSceneWorld()
+
+	if conf.ScnWorld.Enable {
+		eg.Register().RegisterService(cmn.SvcSceneWorld)
+	}
+	if conf.Character.Enable {
+		eg.Register().RegisterService(cmn.SvcCharacter)
+	}
+	if conf.Gate.Enable {
+		eg.Register().RegisterService(cmn.SvcGate)
+	}
+
 	eg.BeforeExit("game", func() {
 		eg.Log().Info("exit game", nil)
 		eg.Dispose()
@@ -141,7 +132,7 @@ func StartGame() {
 	eg.WaitExit()
 }
 
-func userBlackFilter(ip string) bool {
+func userIpBlocker(ip string, fn eg.FnBool) {
 	//todo
-	return false
+	fn(true)
 }

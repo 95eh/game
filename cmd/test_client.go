@@ -21,7 +21,7 @@ func main() {
 func connectServer() {
 	//addr := "47.243.177.125:10001"
 	addr := "127.0.0.1:10001"
-	dialer = network.NewTcpDialer("test", addr, func(agent eg.IAgent, bytes []byte, err eg.FnErr) {
+	dialer = network.NewTcpDialer("test", addr, func(agent eg.IAgent, bytes []byte) {
 		eg.Info("receive", eg.M{
 			"msg": string(bytes),
 		})

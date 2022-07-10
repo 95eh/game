@@ -15,7 +15,7 @@ message ResSceneEnter {
 
 message NtcSceneEnter {
   int32 SceneType = 1; //场景类型
-  int64 SceneId = 2; //场景id
+  sfixed64 SceneId = 2; //场景id
   float PosX = 3;
   float PosY = 4;
   float PosZ = 5;

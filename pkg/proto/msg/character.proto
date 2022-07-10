@@ -10,12 +10,14 @@ message ReqCharacter {
 }
 
 message Character {
-  string Id = 1;
+  // @gotags: json:"Cid,string"
+  sfixed64 Cid = 1;
   string NickName = 2;
   sfixed32 Gender = 3;
   sfixed32 Figure = 4;
   bool IsNovice = 5;
   sfixed32 SceneType = 6;
+  // @gotags: json:"SceneId,string"
   sfixed64 SceneId = 7;
 }
 
@@ -42,7 +44,8 @@ message ResCharacterCreate {
 // 2: 查询失败
 // 3: 不存在的cid
 message ReqCharacterSelect {
-  string Cid = 1;
+  // @gotags: json:"Cid,string"
+  sfixed64 Cid = 1;
 }
 
 message ResCharacterSelect {
@@ -58,6 +61,7 @@ message ResCharacterEnterScene {
 
 message ReqCharacterChangeScene {
   sfixed32 SceneType = 1;
+  // @gotags: json:"SceneId,string"
   sfixed64 SceneId = 2;
 }
 

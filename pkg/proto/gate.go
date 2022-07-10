@@ -11,9 +11,7 @@ const (
 	CdGatePushToUsers
 	CdGatePushToAllUsers
 	CdGateAuth
-	CdGateAuthRepeat
 	CdGateSetCharacterId
-	CdGateDisconnect
 	CdGateUserOfflineNtc
 )
 
@@ -23,9 +21,7 @@ func init() {
 		CdGatePushToUsers:    "push to users",
 		CdGatePushToAllUsers: "push to all users",
 		CdGateAuth:           "auth",
-		CdGateAuthRepeat:     "auth_repeat",
 		CdGateSetCharacterId: "set_character_id",
-		CdGateDisconnect:     "disconnect",
 		CdGateUserOfflineNtc: "user_offline_ntc",
 	})
 }
@@ -37,11 +33,6 @@ func InitGateCodec() {
 		},
 		func() interface{} {
 			return &pb.ResGateAuth{}
-		})
-	c.BindFac(cmn.SvcGate, CdGateAuthRepeat,
-		nil,
-		func() interface{} {
-			return &pb.ResGateAuthRepeat{}
 		})
 	c.BindFac(cmn.SvcGate, CdGateSetCharacterId,
 		func() interface{} {
@@ -65,13 +56,6 @@ func InitGateCodec() {
 			return &pb.PushToAllUsers{}
 		},
 		nil)
-	c.BindFac(cmn.SvcGate, CdGateDisconnect,
-		func() interface{} {
-			return &pb.ReqGateDisconnect{}
-		},
-		func() interface{} {
-			return &pb.ResGateDisconnect{}
-		})
 	c.BindFac(cmn.SvcGate, CdGateUserOfflineNtc,
 		nil,
 		func() interface{} {

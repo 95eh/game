@@ -20,15 +20,21 @@ regionRedis:
 net:
   ip: 127.0.0.1
   port: 7310
-socket:
-  ip: 127.0.0.1
-  port: 7311
-http:
-  ip: 127.0.0.1
-  port: 7312
 gate:
   enable: true
   cap: 4096
+  tcp:
+    ip: 127.0.0.1
+    port: 7311
+  http:
+    ip: 127.0.0.1
+    port: 7312
+  websocket:
+    ip: 127.0.0.1
+    port: 7313
+  udp:
+    ip: 127.0.0.1
+    port: 7314
 character:
   enable: true
 # 场景服开关

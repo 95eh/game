@@ -33,6 +33,10 @@ func StartGlobal() {
 	eg.SetAppName(conf.App.Name)
 	eg.SetAppVer(conf.App.Ver)
 	eg.SetRegion(conf.App.Region)
+	deadline := int64(10)
+	if eg.Mode() == eg.ModeDebug {
+		deadline = 60 * 100
+	}
 	opt := start.Option{
 		Codec: codec.NewPbCodec(),
 		RedisOpts: []svc.RedisOption{
@@ -46,26 +50,27 @@ func StartGlobal() {
 			svc.NetIp(conf.Net.Ip),
 			svc.NetPort(conf.Net.Port),
 		},
-		SvcOpts: []svc.Option{
+		ReqOpts: []svc.ReqOption{
 			svc.ServiceAlias(),
 		},
 		Gate: true,
 		GateOpts: []gate.Option{
-			gate.BlackFilter(userBlackFilter),
+			gate.IpBlocker(userIpBlocker),
 			gate.DefaultMask(eg.GenMask(cmn.RoleGuest)),
-			gate.DefaultRole(cmn.RoleSvc),
+			gate.DefaultRole(cmn.RolePlayer),
+			gate.Deadline(deadline),
 		},
 		ConnOpts: []gate.ConnOption{
 			gate.ConnHttpPort(conf.Http.Port),
-			gate.ConnHttpIdParser(func(bytes []byte) (string, eg.IErr) {
+			gate.ConnHttpIdParser(func(bytes []byte) (int64, int64, eg.IErr) {
 				if bytes == nil {
-					return "", nil
+					return 0, 0, nil
 				}
 				_, c, err := cmn.ParseJwt(eg.BytesToStr(bytes))
 				if err != nil {
-					return "", err
+					return 0, 0, err
 				}
-				return c.Uid, nil
+				return c.Id, c.Uid, nil
 			}),
 		},
 	}
@@ -84,6 +89,7 @@ func StartGlobal() {
 	if conf.Region.Enable {
 		eg.Register().RegisterService(cmn.SvcRegion)
 	}
+
 	eg.BeforeExit("game", func() {
 		eg.Log().Info("exit game", nil)
 		eg.Dispose()

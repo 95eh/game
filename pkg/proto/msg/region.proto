@@ -13,8 +13,12 @@ message Region {
   string HttpPort = 5;
   string SocketIp = 6;
   string SocketPort = 7;
-  fixed32  Count  = 8;
-  fixed32 Cap = 9;
+  string WebsocketIp = 8;
+  string WebsocketPort = 9;
+  string UdpIp = 10;
+  string UdpPort = 11;
+  fixed32 Count  = 12;
+  fixed32 Cap = 13;
 }
 
 // code = 0

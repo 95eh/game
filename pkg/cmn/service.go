@@ -1,6 +1,9 @@
 package cmn
 
-import "github.com/95eh/eg"
+import (
+	"github.com/95eh/eg"
+	"github.com/95eh/eg/svc/proto"
+)
 
 const (
 	SvcAccount eg.TService = 50 + iota
@@ -9,7 +12,7 @@ const (
 
 const (
 	// SvcGate 网关服务
-	SvcGate = iota + 100
+	SvcGate = proto.SvcRegionBegin + iota
 	// SvcCharacter 角色服务
 	SvcCharacter
 	// SvcScene 通用场景服务别名

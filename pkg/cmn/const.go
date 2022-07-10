@@ -8,6 +8,5 @@ const (
 const (
 	RoleGuest int64 = 1 << iota
 	RolePlayer
-	RoleSvc
 	RoleAdmin
 )

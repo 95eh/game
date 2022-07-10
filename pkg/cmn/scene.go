@@ -12,7 +12,7 @@ func SceneTypeToSceneService(sceneType eg.TScene) (eg.TService, eg.IErr) {
 	case SceneWorld:
 		return SvcSceneWorld, nil
 	default:
-		return SceneNil, eg.NewErr(eg.EcParamsWrong, eg.M{
+		return SceneNil, eg.NewErr(eg.EcParamsErr, eg.M{
 			"scene type": sceneType,
 		})
 	}

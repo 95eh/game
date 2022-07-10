@@ -11,19 +11,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func InitCharacter(conf cmn.CharacterConf) {
 	proto.InitCharacterCodec()
 
-	svc := eg.Svc().BindService(cmn.SvcCharacter)
+	svc := eg.Svc().RegisterService(cmn.SvcCharacter)
 	{
-		svc.Bind(proto.CdCharacterInfo, characterInfo)
-		svc.Bind(proto.CdCharacterCreate, characterCreate)
-		svc.Bind(proto.CdCharacterSelect, characterSelect)
-		svc.Bind(proto.CdCharacterEnterScene, characterEnterScene)
-		svc.Bind(proto.CdCharacterChangeScene, characterChangeScene)
-		svc.Bind(proto.CdCharacterExitScene, characterExitScene)
+		svc.BindReq(proto.CdCharacterInfo, characterInfo)
+		svc.BindReq(proto.CdCharacterCreate, characterCreate)
+		svc.BindReq(proto.CdCharacterSelect, characterSelect)
+		svc.BindReq(proto.CdCharacterEnterScene, characterEnterScene)
+		svc.BindReq(proto.CdCharacterChangeScene, characterChangeScene)
+		svc.BindReq(proto.CdCharacterExitScene, characterExitScene)
 	}
 	ntc := eg.Ntc().BindServiceNotice(cmn.SvcGate)
 	{
@@ -36,8 +37,30 @@ func characterColl() *mongo.Collection {
 }
 
 func characterExitScene(ctx eg.ICtx) {
-	// todo 判断能否退出当前的场景
-	ctx.Ok(&pb.ResCharacterExitScene{})
+	var character model.Character
+	e := characterColl().FindOne(context.TODO(), bson.D{
+		{"cid", ctx.GetId()},
+	}, options.FindOne().SetProjection(
+		bson.D{
+			{"scene_type", 1},
+			{"scene_id", 1},
+			{"posX", 1},
+			{"posY", 1},
+			{"nick_name", 1},
+		}),
+	).Decode(&character)
+	if e != nil {
+		ctx.Err(eg.WrapErr(eg.EcUnmarshallErr, e))
+		return
+	}
+
+	eg.Req().Request(ctx.Tid(), ctx.GetId(), cmn.SvcScene, proto.CdSceneExit,
+		&pb.ReqSceneExit{},
+		func(tid int64, obj any) {
+			ctx.Ok(&pb.ResCharacterExitScene{})
+		}, func(tid int64, err eg.IErr) {
+			ctx.Err(err)
+		})
 }
 
 func characterChangeScene(ctx eg.ICtx) {
@@ -48,21 +71,37 @@ func characterChangeScene(ctx eg.ICtx) {
 }
 
 func characterEnterScene(ctx eg.ICtx) {
-	sceneId := int64(1)
-	//todo 获取角色数据
+	var character model.Character
+	e := characterColl().FindOne(context.TODO(), bson.D{
+		{"cid", ctx.GetId()},
+	}, options.FindOne().SetProjection(
+		bson.D{
+			{"scene_type", 1},
+			{"scene_id", 1},
+			{"posX", 1},
+			{"posY", 1},
+			{"nick_name", 1},
+		}),
+	).Decode(&character)
+	if e != nil {
+		ctx.Err(eg.WrapErr(eg.EcUnmarshallErr, e))
+		return
+	}
+
 	bytes, err := eg.M{
-		rpg.TnfPos: eg.NewVec3(100, 0, 100),
-		rpg.LfName: "95eh",
+		rpg.TnfPos: eg.NewVec3(character.PosX, 0, character.PosY),
+		rpg.LfName: character.NickName,
 	}.Gob()
 	if err != nil {
 		ctx.Err(err)
+		return
 	}
-	eg.Svc().Request(ctx.Tid(), ctx.GetId(), cmn.SvcScene, proto.CdSceneEnter,
+	eg.Req().Request(ctx.Tid(), ctx.GetId(), cmn.SvcScene, proto.CdSceneEnter,
 		&pb.ReqSceneEnter{
-			SceneId: sceneId,
+			SceneId: character.SceneId,
 			Type:    int32(cmn.ActorPlayer),
 			Bytes:   bytes,
-		}, func(tid int64, obj interface{}) {
+		}, func(tid int64, obj any) {
 			ctx.Ok(&pb.ResCharacterEnterScene{})
 		}, func(tid int64, err eg.IErr) {
 			ctx.Err(err)
@@ -71,39 +110,32 @@ func characterEnterScene(ctx eg.ICtx) {
 
 func characterSelect(ctx eg.ICtx) {
 	req := ctx.Body().(*pb.ReqCharacterSelect)
-	id, err := primitive.ObjectIDFromHex(req.Cid)
+	var character model.Character
+	err := characterColl().FindOne(context.TODO(), bson.D{
+		{"cid", req.Cid},
+	}, options.FindOne().SetProjection(bson.D{
+		{"scene_type", 1},
+	})).Decode(&character)
 	if err != nil {
+		ctx.Err(eg.WrapErr(eg.EcUnmarshallErr, err))
+		return
+	}
+	if character.Id == primitive.NilObjectID {
 		ctx.Ok(&pb.ResCharacterSelect{
 			ErrCode: 1,
 		})
 		return
 	}
-	var t model.Character
-	err = characterColl().FindOne(context.TODO(), bson.D{
-		{"_id", id},
-	}).Decode(t)
-	if err != nil {
-		ctx.Ok(&pb.ResCharacterSelect{
-			ErrCode: 2,
-		})
-		return
-	}
-	if t.Id == primitive.NilObjectID {
-		ctx.Ok(&pb.ResCharacterSelect{
-			ErrCode: 3,
-		})
+	sceneService, e := cmn.SceneTypeToSceneService(character.SceneType)
+	if e != nil {
+		eg.Log().Error(e)
 		return
 	}
 	ctx.Ok(&pb.ResCharacterSelect{})
-	sceneService, iErr := cmn.SceneTypeToSceneService(t.SceneType)
-	if iErr != nil {
-		eg.Log().Error(iErr)
-		return
-	}
-	eg.Svc().Request(0, ctx.GetId(), cmn.SvcGate, proto.CdGateSetCharacterId,
+	eg.Req().Request(0, ctx.GetId(), cmn.SvcGate, proto.CdGateSetCharacterId,
 		&pb.ReqGateSetCharacterId{
 			Cid: req.Cid,
-		}, func(tid int64, obj interface{}) {
+		}, func(tid int64, obj any) {
 
 		}, func(tid int64, err eg.IErr) {
 
@@ -113,7 +145,6 @@ func characterSelect(ctx eg.ICtx) {
 
 func characterInfo(ctx eg.ICtx) {
 	//查询账号角色列表
-	characters := make([]model.Character, 0)
 	cur, err := characterColl().Find(context.TODO(), bson.D{
 		{"uid", ctx.GetId()},
 	})
@@ -123,6 +154,7 @@ func characterInfo(ctx eg.ICtx) {
 		})
 		return
 	}
+	var characters []model.Character
 	err = cur.All(context.TODO(), &characters)
 	if err != nil {
 		ctx.Err(eg.NewErr(eg.EcServiceErr, eg.M{
@@ -135,7 +167,7 @@ func characterInfo(ctx eg.ICtx) {
 	characterSlice := make([]*pb.Character, len(characters))
 	for i, c := range characters {
 		characterSlice[i] = &pb.Character{
-			Id:        c.Id.Hex(),
+			Cid:       c.Cid,
 			NickName:  c.NickName,
 			Gender:    0,
 			Figure:    0,
@@ -174,10 +206,10 @@ func characterCreate(ctx eg.ICtx) {
 		})
 		return
 	}
-	character := &model.Character{}
+	var character model.Character
 	err := characterColl().FindOne(context.TODO(), bson.D{
-		{"nickname", req.NickName},
-	}).Decode(character)
+		{"nick_name", req.NickName},
+	}).Decode(&character)
 	if err == nil {
 		ctx.Ok(&pb.ResCharacterCreate{
 			ErrCode: 4,
@@ -191,13 +223,17 @@ func characterCreate(ctx eg.ICtx) {
 		return
 	}
 
+	cid := eg.SId().GetGlobalId()
 	characterColl().InsertOne(context.TODO(), &model.Character{
-		Id:       primitive.NewObjectID(),
-		Uid:      ctx.GetId(),
-		NickName: req.NickName,
-		Gender:   uint8(req.Gender),
-		Figure:   uint8(req.Figure),
-		IsNovice: true,
+		Id:        primitive.NewObjectID(),
+		Cid:       cid,
+		Uid:       ctx.GetId(),
+		NickName:  req.NickName,
+		Gender:    uint8(req.Gender),
+		Figure:    uint8(req.Figure),
+		IsNovice:  true,
+		SceneType: cmn.SceneWorld,
+		SceneId:   1,
 	})
 	ctx.Ok(&pb.ResCharacterCreate{})
 }

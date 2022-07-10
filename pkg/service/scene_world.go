@@ -18,22 +18,26 @@ func InitSceneWorld(conf cmn.ScnWorldConf) {
 	eg.Timer().StartQuickTicker(rpg.TnfMoveTicker, rpg.TnfMoveTickDur)
 	eg.Scene().BindSceneFac(cmn.SceneWorld, worldSceneFac)
 	rpg.TileScene().AddSceneTplConf(cmn.SceneWorld, conf.Tile)
-	_, err = eg.Scene().CreateScene(cmn.SceneWorld, 1, 1024, nil)
+}
+
+func CreateSceneWorld() {
+	//todo 读取数据
+	_, err := eg.Scene().CreateScene(cmn.SceneWorld, 1, 1024, nil)
 	if err != nil {
 		eg.Fatal(err)
 	}
 }
 
 func worldSceneFac(scene eg.IScene, o interface{}) eg.IErr {
-	eg.Timer().After(1000, func() {
-		testActors()
-		testPlayer()
-	})
+	//eg.Timer().After(1000, func() {
+	//	testActors()
+	//	testPlayer()
+	//})
 	return nil
 }
 
 func testPlayer() {
-	id := "player_0"
+	id := int64(1)
 	bytes, _ := eg.M{
 		rpg.TnfPos: eg.Vec3{
 			X: 100,
@@ -41,7 +45,7 @@ func testPlayer() {
 			Z: 100,
 		},
 		rpg.TnfMoveSpeed: float32(6),
-		rpg.LfName:       id,
+		rpg.LfName:       "95eh",
 	}.Gob()
 	reqEnter := &pb.ReqSceneEnter{
 		SceneId: 1,
@@ -101,6 +105,7 @@ func testActors() {
 			for j := int32(0); j < y; j++ {
 				for m := int32(0); m < n; m++ {
 					//id := primitive.NewObjectID()
+					id := eg.SId().GetRegionId()
 					name := fmt.Sprintf("test_%d_%d_%d", i, j, m)
 					px := float32((i * conf.TileSize) + tsh)
 					py := float32((j * conf.TileSize) + tsh)
@@ -123,7 +128,7 @@ func testActors() {
 						"scene id":   req.SceneId,
 						"actor type": req.Type,
 					})
-					ctx := svc.SpawnCtx(tid, name, req, func(tid int64, obj interface{}) {
+					ctx := svc.SpawnCtx(tid, id, req, func(tid int64, obj interface{}) {
 
 					}, func(tid int64, err eg.IErr) {
 

@@ -12,8 +12,11 @@ var (
 )
 
 type Claims struct {
-	Uid    string `json:"uid"`
+	Id     int64  `json:"id"`
+	Uid    int64  `json:"uid"`
+	Mask   int64  `json:"mask"`
 	Issuer string `json:"issuer"`
+	Expire int64  `json:"expire"`
 }
 
 func (c Claims) Valid() error {
@@ -31,14 +34,17 @@ func SetJwtIssuer(issuer string) {
 	_Issuer = issuer
 }
 
-func GenerateJwt(uid string) (str string, err error) {
+func GenerateJwt(uid, mask, expire int64) (int64, string, error) {
 	claims := &Claims{
+		Id:     eg.SId().GetRegionId(),
 		Uid:    uid,
+		Mask:   mask,
+		Expire: expire,
 		Issuer: _Issuer,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	str, err = token.SignedString(_JwtKey)
-	return
+	str, err := token.SignedString(_JwtKey)
+	return claims.Id, str, err
 }
 
 func ParseJwt(str string) (tkn *jwt.Token, c Claims, err eg.IErr) {
