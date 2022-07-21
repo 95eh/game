@@ -29,10 +29,10 @@ func CreateSceneWorld() {
 }
 
 func worldSceneFac(scene eg.IScene, o interface{}) eg.IErr {
-	//eg.Timer().After(1000, func() {
-	//	testActors()
-	//	testPlayer()
-	//})
+	eg.Timer().After(1000, func() {
+		testActors()
+		testPlayer()
+	})
 	return nil
 }
 
@@ -89,13 +89,14 @@ func testPlayer() {
 }
 
 func testActors() {
-	return
+	//return
 	tsc, _ := rpg.TileScene().GetSceneTplData(cmn.SceneWorld)
 	conf := tsc.Conf()
 	x := conf.Width / conf.TileSize
 	y := conf.Length / conf.TileSize
 	tsh := conf.TileSize / 2
 	n := int32(8)
+	//n := int32(6)
 	v := x * y * n
 	eg.Log().Debug("test total", eg.M{
 		"v": v,

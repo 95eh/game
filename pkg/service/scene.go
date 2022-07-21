@@ -81,19 +81,19 @@ func sceneEnter(ctx eg.ICtx) {
 		GetScene(req.SceneId).
 		SpawnActor(eg.TActor(req.Type), actorId, o).
 		SpawnActorEvent(rpg.NewEvtVisible).
-		GetTagsTag(func(actor eg.IActor, s eg.ISceneWorkerScheduler) ([]string, string, eg.IErr) {
+		ActorToTagsAndTag(func(actor eg.IActor, s eg.ISceneWorkerScheduler) ([]string, string, eg.IErr) {
 			c, _ := actor.GetComponent(rpg.Ac_Transform)
 			tags, tag := c.(*rpg.AcTransform).GetVisionTileTags()
 			return tags, tag, nil
 		}).
-		GetTagsActors().
+		GetActorsByTags().
 		ResetActorEvents(1).
 		FnActors(func(actor eg.IActor, s eg.ISceneWorkerScheduler) eg.IErr {
 			if actor.Id() == actorId {
 				return nil
 			}
 			actor.ProcessEvent(s.ActorEvent())
-			s.PushEvent(rpg.NewEvtVisible(actor))
+			s.PushActorEvent(rpg.NewEvtVisible(actor))
 			return nil
 		}).
 		ActorProcessEvents().
@@ -111,19 +111,19 @@ func sceneExit(ctx eg.ICtx) {
 	eg.Scene().SpawnScheduler(ctx.Tid(), nil).
 		GetActorAndScene(actorId).
 		SpawnActorEvent(rpg.NewEvtInvisible).
-		GetTagsTag(func(actor eg.IActor, s eg.ISceneWorkerScheduler) ([]string, string, eg.IErr) {
+		ActorToTagsAndTag(func(actor eg.IActor, s eg.ISceneWorkerScheduler) ([]string, string, eg.IErr) {
 			c, _ := actor.GetComponent(rpg.Ac_Transform)
 			tags, tag := c.(*rpg.AcTransform).GetVisionTileTags()
 			return tags, tag, nil
 		}).
-		GetTagsActors().
+		GetActorsByTags().
 		ResetActorEvents(1).
 		FnActors(func(actor eg.IActor, s eg.ISceneWorkerScheduler) eg.IErr {
 			if actor.Id() == actorId {
 				return nil
 			}
 			actor.ProcessEvent(s.ActorEvent())
-			s.PushEvent(rpg.NewEvtInvisible(actor))
+			s.PushActorEvent(rpg.NewEvtInvisible(actor))
 			return nil
 		}).
 		ActorProcessEvents().
@@ -146,12 +146,12 @@ func sceneMoveStart(ctx eg.ICtx) {
 	eg.Scene().SpawnScheduler(ctx.Tid(), nil).
 		GetActorAndScene(ctx.GetId()).
 		SpawnActorEvent(rpg.NewEvtMoveStart).
-		GetTags(func(actor eg.IActor, s eg.ISceneWorkerScheduler) (tags []string, e eg.IErr) {
+		ActorToTags(func(actor eg.IActor, s eg.ISceneWorkerScheduler) (tags []string, e eg.IErr) {
 			c, _ := actor.GetComponent(rpg.Ac_Transform)
 			tags = c.(*rpg.AcTransform).StartMove(eg.NewVec3(req.ForX, req.ForY, req.ForZ))
 			return
 		}).
-		GetTagsActors().
+		GetActorsByTags().
 		ActorsProcessEvent().
 		Do(nil, func(object *eg.Object, err eg.IErr) {
 			if err != nil {
@@ -166,12 +166,12 @@ func sceneMoveStop(ctx eg.ICtx) {
 	eg.Scene().SpawnScheduler(ctx.Tid(), nil).
 		GetActorAndScene(ctx.GetId()).
 		SpawnActorEvent(rpg.NewEvtMoveStop).
-		GetTags(func(actor eg.IActor, s eg.ISceneWorkerScheduler) (tags []string, e eg.IErr) {
+		ActorToTags(func(actor eg.IActor, s eg.ISceneWorkerScheduler) (tags []string, e eg.IErr) {
 			c, _ := actor.GetComponent(rpg.Ac_Transform)
 			tags = c.(*rpg.AcTransform).StopMove()
 			return
 		}).
-		GetTagsActors().
+		GetActorsByTags().
 		ActorsProcessEvent().
 		Do(nil, func(object *eg.Object, err eg.IErr) {
 			if err != nil {
